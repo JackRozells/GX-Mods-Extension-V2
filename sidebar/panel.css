@@ -1,0 +1,224 @@
+/* Reuse the GX palette + shared components (switches, sliders, gxButton, volume
+   container) from the popup. accents_privileged.js re-themes the --gx-* vars to
+   match the current browser theme (e.g. firefox-gx). */
+@import url("../popup/settings_menu.css");
+
+:root {
+  --scrollbar-width: 0px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 200px;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+  background-color: hsl(var(--gx-no-08));
+}
+
+#panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.card {
+  background-color: hsl(var(--gx-no-12));
+  border: 1px solid hsl(var(--gx-no-24));
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cardHeader .categoryTitle {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 12px;
+  color: hsl(var(--gx-no-90));
+}
+
+/* ---------------- Music player ---------------- */
+.nowPlaying {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#trackTitle {
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.intensityMeter {
+  margin-top: 8px;
+  height: 4px;
+  border-radius: 4px;
+  background-color: hsl(var(--gx-no-04));
+  overflow: hidden;
+}
+
+.intensityFill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background-color: hsl(var(--gx-accent-l-100));
+  transition: width .12s linear, opacity .25s;
+}
+
+.transport {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 12px 0 4px;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: hsl(var(--gx-no-92));
+  background-color: hsl(var(--gx-no-20));
+  transition: background-color .15s, color .15s, transform .05s;
+}
+
+.iconButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.iconButton:hover {
+  background-color: hsl(var(--gx-no-24));
+  color: hsl(var(--gx-no-100));
+}
+
+.iconButton:active {
+  transform: scale(.92);
+}
+
+.playButton {
+  width: 48px;
+  height: 48px;
+  color: hsl(var(--gx-accent-100-contrast));
+  background-color: hsl(var(--gx-accent-l-100));
+  box-shadow: 0 0 12px hsl(var(--gx-accent-l-100) / 45%);
+}
+
+.playButton svg {
+  width: 22px;
+  height: 22px;
+}
+
+.playButton:hover {
+  background-color: hsl(var(--gx-accent-l-120));
+  color: hsl(var(--gx-accent-100-contrast));
+}
+
+/* Swap play / pause glyphs based on the paused state on <body>. */
+.iconPause {
+  display: none;
+}
+
+body.playing .iconPlay {
+  display: none;
+}
+
+body.playing .iconPause {
+  display: block;
+}
+
+/* ---------------- RAM tools ---------------- */
+.ramGauge {
+  height: 8px;
+  border-radius: 6px;
+  background-color: hsl(var(--gx-no-04));
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.ramGaugeFill {
+  height: 100%;
+  width: 0%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, hsl(var(--gx-accent-l-80)), hsl(var(--gx-accent-l-120)));
+  transition: width .3s ease;
+}
+
+.ramStats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 12px;
+  color: hsl(var(--gx-no-77));
+  margin-bottom: 10px;
+}
+
+.ramStats b {
+  color: hsl(var(--gx-no-100));
+  font-weight: 600;
+}
+
+.fullButton {
+  width: 100%;
+}
+
+.cleanerResult {
+  display: block;
+  min-height: 14px;
+  margin-top: 6px;
+  text-align: center;
+  color: hsl(var(--gx-accent-l-140));
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.cleanerResult.show {
+  opacity: 1;
+}
+
+.idleRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+#idleValue {
+  font-size: 12px;
+  color: hsl(var(--gx-no-90));
+}
+
+.fullSlider {
+  width: 100%;
+}
+
+/* ---------------- Footer ---------------- */
+.footer {
+  display: flex;
+}

@@ -108,7 +108,10 @@ const cachedSettings = {
     muteShopping: false,
 
     globalMute: false,
-    globalMutePersist: false
+    globalMutePersist: false,
+
+    ramLimiterEnabled: false,
+    ramLimiterIdleMinutes: 20
 }
 
 let searchEngines = [] // Cached later
@@ -954,7 +957,11 @@ function sendSoundPlayLogEvent(type, event, currentTab) {
 
 async function onExtensionMessage(message, sender) {
     if ((typeof message === 'object') && (message != null)) {
-        if (message.intent == "getModState" && message.modId) {
+        if (message.intent == "ramCleaner") {
+            return { discarded: await runCleaner() }
+        } else if (message.intent == "musicLevel") {
+            return { level: lerpedLevel }
+        } else if (message.intent == "getModState" && message.modId) {
             console.log('[GXM] getting mod state')
             let modData = {}
             try {
@@ -2325,6 +2332,9 @@ browser.storage.local.get().then(
         cachedSettings.globalMutePersist = (typeof result.globalMutePersist == "undefined") ? false : result.globalMutePersist;
         cachedSettings.globalMute = (typeof result.globalMute == "undefined" || (!cachedSettings.globalMutePersist)) ? false : result.globalMute;
 
+        cachedSettings.ramLimiterEnabled = (typeof result.ramLimiterEnabled == "undefined") ? false : result.ramLimiterEnabled;
+        cachedSettings.ramLimiterIdleMinutes = (typeof result.ramLimiterIdleMinutes == "undefined") ? 20 : result.ramLimiterIdleMinutes;
+
         if (result.consentedToJSD && result.shoppingMute) {
             initShoppingMutes()
         }
@@ -2365,12 +2375,83 @@ function updateSettings(changes) {
                 }
             } else if (item == "globalMute") {
                 browser.browserAction.setBadgeText({text: (changes[item].newValue == true ? "off" : "")})
+            } else if (item == "ramLimiterEnabled") {
+                SFXGainNode.gain.value = (cachedSettings.sfxVolume/100);
+                if (changes[item].newValue) {
+                    playSound(currentBrowserSounds.LIMITER_ON ? currentBrowserSounds.LIMITER_ON : [], SFXGainNode);
+                    sweepIdleTabs();
+                } else {
+                    playSound(currentBrowserSounds.LIMITER_OFF ? currentBrowserSounds.LIMITER_OFF : [], SFXGainNode);
+                }
             }
         }
     }
 }
 
 browser.storage.local.onChanged.addListener(updateSettings);
+
+/* ===================== RAM limiter / cleaner =====================
+   Firefox extensions can't set a true memory cap, so we reclaim RAM the same
+   way tab-suspender extensions do: browser.tabs.discard() unloads a tab from
+   memory while keeping it in the tab strip (it reloads when clicked). We never
+   touch the active tab, pinned tabs, or tabs currently playing audio. */
+
+async function getDiscardableTabs(respectIdle) {
+    const idleMs = (cachedSettings.ramLimiterIdleMinutes || 20) * 60 * 1000
+    const now = Date.now()
+    let tabs = []
+    try {
+        tabs = await browser.tabs.query({})
+    } catch (err) {
+        console.warn("[GXM] Couldn't query tabs for RAM tools:", err)
+        return []
+    }
+    return tabs.filter(tab =>
+        !tab.active &&
+        !tab.highlighted &&
+        !tab.pinned &&
+        !tab.audible &&
+        !tab.discarded &&
+        tab.discardable !== false &&
+        tab.status !== "loading" &&
+        typeof tab.url === "string" &&
+        !tab.url.startsWith("about:") &&
+        (!respectIdle || (tab.lastAccessed && (now - tab.lastAccessed) > idleMs))
+    )
+}
+
+async function discardTabs(tabs) {
+    if (!tabs.length) return 0
+    const ids = tabs.map(t => t.id)
+    try {
+        await browser.tabs.discard(ids)
+        return ids.length
+    } catch (err) {
+        console.warn("[GXM] tabs.discard failed:", err)
+        return 0
+    }
+}
+
+// Automatic pass: only unloads tabs idle past the configured timeout.
+async function sweepIdleTabs() {
+    if (!cachedSettings.ramLimiterEnabled) return 0
+    const freed = await discardTabs(await getDiscardableTabs(true))
+    if (freed > 0) console.log(`[GXM] RAM limiter unloaded ${freed} idle tab(s)`)
+    return freed
+}
+
+// Manual "Free up RAM" button: unloads every eligible background tab now.
+async function runCleaner() {
+    const freed = await discardTabs(await getDiscardableTabs(false))
+    if (freed > 0) {
+        SFXGainNode.gain.value = (cachedSettings.sfxVolume/100);
+        playSound(currentBrowserSounds.TAB_SLASH ? currentBrowserSounds.TAB_SLASH : [], SFXGainNode);
+    }
+    console.log(`[GXM] Cleaner unloaded ${freed} tab(s)`)
+    return freed
+}
+
+setInterval(sweepIdleTabs, 60000)
 
 console.log("[GXM] updating the shop websites list")
 
@@ -2521,6 +2602,14 @@ const commandFunctions = {
     },
     "mod-manager": function() {
         browser.runtime.openOptionsPage()
+    },
+    "ram-cleaner": function() {
+        runCleaner()
+    },
+    "ram-limiter": function() {
+        browser.storage.local.set({
+            ramLimiterEnabled: !cachedSettings.ramLimiterEnabled
+        })
     }
 }
 

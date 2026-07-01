@@ -54,7 +54,25 @@
     "default_popup": "popup/settings_menu.html"
   },
 
+  "sidebar_action": {
+    "default_title": "GX Mods",
+    "default_panel": "sidebar/panel.html",
+    "default_icon": "icons/beasts-32.png"
+  },
+
   "commands": {
+    "_execute_sidebar_action": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+S"
+      },
+      "description": "Toggle the GX Mods sidebar"
+    },
+    "ram-cleaner": {
+      "description": "Free up RAM (unload background tabs)"
+    },
+    "ram-limiter": {
+      "description": "Toggle the RAM limiter"
+    },
     "background-music": {
       "suggested_key": {
         "default": "Ctrl+Alt+B"

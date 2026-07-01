@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="panel.css">
+  <title>GX Mods</title>
+  <link rel="icon" type="image/x-icon" href="../icons/beasts-32-light.png">
+</head>
+
+<body>
+  <div id="panel">
+    <!-- ===================== Music player ===================== -->
+    <section class="card" id="playerCard">
+      <div class="cardHeader">
+        <span class="categoryTitle">Now playing</span>
+      </div>
+
+      <div class="nowPlaying">
+        <span id="trackTitle">No music</span>
+        <span class="sourceSubtitle" id="trackSource"></span>
+      </div>
+
+      <div class="intensityMeter" title="Music intensity">
+        <div class="intensityFill" id="intensityFill"></div>
+      </div>
+
+      <div class="transport">
+        <button class="iconButton" id="prevBtn" title="Previous track" draggable="false">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="18,5 8,12 18,19" />
+            <rect x="5" y="5" width="2" height="14" rx="1" />
+          </svg>
+        </button>
+        <button class="iconButton playButton" id="playPauseBtn" title="Play / Pause" draggable="false">
+          <svg class="iconPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="7,4 20,12 7,20" />
+          </svg>
+          <svg class="iconPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="4" width="4" height="16" rx="1" />
+            <rect x="14" y="4" width="4" height="16" rx="1" />
+          </svg>
+        </button>
+        <button class="iconButton" id="nextBtn" title="Next track" draggable="false">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="6,5 16,12 6,19" />
+            <rect x="17" y="5" width="2" height="14" rx="1" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="optionContainer">
+        <div id="volumeContainer">
+          <div class="volumeIcon"></div>
+          <input id="volume" type="range" min="0" max="100" value="50" class="slider">
+          <span id="volumePercentage">50</span>
+        </div>
+      </div>
+
+      <div class="optionContainer switchContainer">
+        <label for="globalMute">Mute everything</label>
+        <label class="switch">
+          <input id="globalMute" type="checkbox">
+          <span class="toggleSwitch round"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ===================== RAM tools ===================== -->
+    <section class="card" id="ramCard">
+      <div class="cardHeader">
+        <span class="categoryTitle">RAM</span>
+        <span class="sourceSubtitle" id="ramSummary">&mdash;</span>
+      </div>
+
+      <div class="ramGauge" title="Loaded vs. total tabs">
+        <div class="ramGaugeFill" id="ramGaugeFill"></div>
+      </div>
+      <div class="ramStats">
+        <span><b id="loadedCount">0</b> loaded</span>
+        <span><b id="unloadedCount">0</b> unloaded</span>
+      </div>
+
+      <button class="gxButton importantButton fullButton" id="cleanerBtn" draggable="false">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.4 4.6a1.9 1.9 0 0 0-2.7 0L11 10.3l2.7 2.7 5.7-5.7a1.9 1.9 0 0 0 0-2.7Z" />
+          <path d="M11 10.3 4.7 16.6a2 2 0 0 0 0 2.8l0 0a2 2 0 0 0 2.8 0L13.7 13" />
+          <path d="m6.5 14.5 3 3" />
+        </svg>
+        Free up RAM
+      </button>
+      <span class="cleanerResult sourceSubtitle" id="cleanerResult"></span>
+
+      <hr class="spacer">
+
+      <div class="optionContainer switchContainer">
+        <label for="ramLimiter">RAM Limiter</label>
+        <label class="switch">
+          <input id="ramLimiter" type="checkbox">
+          <span class="toggleSwitch round"></span>
+        </label>
+      </div>
+      <span class="sourceSubtitle">Automatically unloads tabs you haven't touched in a while. Active, pinned, and
+        audio-playing tabs are always kept.</span>
+
+      <div id="idleContainer" class="hidden">
+        <hr class="spacer">
+        <div class="optionContainer idleRow">
+          <label for="idleMinutes">Unload after</label>
+          <span id="idleValue">20 min</span>
+        </div>
+        <input id="idleMinutes" type="range" min="5" max="120" step="5" value="20" class="slider fullSlider">
+      </div>
+    </section>
+
+    <!-- ===================== Footer ===================== -->
+    <section class="footer">
+      <button class="gxButton fullButton" id="settingsBtn" draggable="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+        </svg>
+        All settings &amp; mods
+      </button>
+    </section>
+  </div>
+
+  <script src="../accents_privileged.js"></script>
+  <script src="../libs/localforage.min.js"></script>
+  <script src="panel.js"></script>
+</body>
+
+</html>
