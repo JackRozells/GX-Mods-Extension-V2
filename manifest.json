@@ -57,7 +57,7 @@
   "sidebar_action": {
     "default_title": "GX Mods",
     "default_panel": "sidebar/panel.html",
-    "default_icon": "icons/beasts-32.png"
+    "default_icon": "icons/beasts-32-light.png"
   },
 
   "commands": {
